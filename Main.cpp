@@ -50,13 +50,6 @@ public:
     inline static float alternatePeriodB = 11.0f;
     inline static Vector3f palette = Vector3f(1.0f, 1.0f, 1.0f);
 
-    //agent properties
-    Vector2f pos;
-    Vector2f vel;
-    float dir;
-    Color color;
-    Vector3f colorBase;
-
     Agent() {
         //spawn agent with a random position, velocity, and base color
         pos.x = rand() % WIDTH;
@@ -132,6 +125,9 @@ public:
     }
 
     void updateDir(Image& im, bool checkOutside) {
+
+        im.setPixel(pos.x, pos.y, color);
+
         //determine avg color in zones in front, left, and right of agent
         float bias = 0;
 
@@ -154,6 +150,13 @@ public:
     }
 
 private:
+
+    //agent properties
+    Vector2f pos;
+    Vector2f vel;
+    float dir;
+    Color color;
+    Vector3f colorBase;
 
     float sig(float x) {
         return 1.0f / (1 + pow(_Exp1, x));
@@ -250,9 +253,26 @@ string formatFloat(float f, int n) {
     return s.substr(0, delim) + "." + back;
 }
 
+Vector2f cross(Vector2f a, Vector2f b) {
+    return Vector2f(a.x * b.x, a.y * b.y);
+}
+
+string getSettingString(float val, int rule) {
+
+    if (rule == 4 || rule == 5 || rule == 6)
+        return val > 0 ? "True" : "False";
+
+    else if (rule == 1) 
+        return formatFloat(val * 180.0f / _Pi, 4);
+    
+    else
+        return formatFloat(val, 4);
+}
+
 int main()
 {
     Vector2f scale((float)WINDOW_WIDTH / WIDTH, (float)WINDOW_HEIGHT / HEIGHT);
+    Vector2f invScale(1.0f / scale.x, 1.0f / scale.y);
 
     float desiredFPS = 1000;
     float frameTimeMS = 1000.0 / desiredFPS;
@@ -302,10 +322,6 @@ int main()
     Clock timer;
     int frameCount = 0;
 
-    int fps = 0;
-    Text fpsCounter(std::to_string(fps), font, 30);
-    fpsCounter.setFillColor(Color::Red);
-
     //spawn agents
     vector<Agent> agentList;
     for (int i = 0; i < agentCount; i++) {
@@ -318,26 +334,26 @@ int main()
     Setting settings[settingCount] = {
 
         //Agent Options
-        Setting("Speed:\t\t", &Agent::speed, 0.05f, 0),
-        Setting("Max Turn:\t", &Agent::maxTurn, _Pi / 720.0f, 1),
-        Setting("Bias:\t\t", &Agent::biasFactor, 0.05f, 0),
-        Setting("Search Size:\t", &Agent::searchSize, 0.01f, 0),
-        Setting("Search Angle:\t", &Agent::searchAngle, _Pi / 360.0f, 1),
-        Setting("Bounce:\t\t", &Agent::bounce, 0.0f, 5),
+        Setting("Speed:          \t", &Agent::speed, 0.05f, 0),
+        Setting("Max Turn:       \t", &Agent::maxTurn, _Pi / 720.0f, 1),
+        Setting("Bias:           \t", &Agent::biasFactor, 0.05f, 0),
+        Setting("Search Size:    \t", &Agent::searchSize, 1.0f, 0),
+        Setting("Search Angle:   \t", &Agent::searchAngle, _Pi / 360.0f, 1),
+        Setting("Bounce:         \t", &Agent::bounce, 0.0f, 5),
 
         //Shader Options
-        Setting("Dim Rate:\t", &dimRate, 0.0005f, 3),
-        Setting("Disperse:\t", &disperseFactor, 0.005f, 3),
-        Setting("Outside Sample:\t", &checkOutside, 0.0f, 6),
+        Setting("Dim Rate:       \t", &dimRate, 0.0005f, 3),
+        Setting("Disperse:       \t", &disperseFactor, 0.005f, 3),
+        Setting("Outside Sample: \t", &checkOutside, 0.0f, 6),
 
         //Color Options
-        Setting("PaletteR:\t", &Agent::palette.x, 0.01f, 2),
-        Setting("PaletteG:\t", &Agent::palette.y, 0.01f, 2),
-        Setting("PaletteB:\t", &Agent::palette.z, 0.01f, 2),
+        Setting("PaletteR:       \t", &Agent::palette.x, 0.01f, 2),
+        Setting("PaletteG:       \t", &Agent::palette.y, 0.01f, 2),
+        Setting("PaletteB:       \t", &Agent::palette.z, 0.01f, 2),
         Setting("Color Alternate:\t", &Agent::alternate, 0.0f, 4),
-        Setting("R Alternate:\t", &Agent::alternatePeriodR, 0.25f, 2),
-        Setting("G Alternate:\t", &Agent::alternatePeriodG, 0.25f, 2),
-        Setting("B Alternate:\t", &Agent::alternatePeriodB, 0.25f, 2)
+        Setting("R Alternate:    \t", &Agent::alternatePeriodR, 0.25f, 2),
+        Setting("G Alternate:    \t", &Agent::alternatePeriodG, 0.25f, 2),
+        Setting("B Alternate:    \t", &Agent::alternatePeriodB, 0.25f, 2)
     };
     settings[6].shaderVar = "dimRate";
     settings[7].shaderVar = "disperseFactor";
@@ -345,91 +361,110 @@ int main()
 
     int currentSetting = 0;
 
-    Text settingText(settings[currentSetting].name + formatFloat(*settings[currentSetting].val, 4), font, 30);
-    settingText.setFillColor(Color::Red);
-    settingText.setPosition(Vector2f(0, 50));
+    int fps = 0;
+    Text fpsCounter(std::to_string(fps), font, 20);
+    fpsCounter.setFillColor(Color::White);
+
+    CircleShape mouse;
+    mouse.setRadius(10);
+    mouse.setOrigin(Vector2f(mouse.getRadius() / 2, mouse.getRadius() / 2));
+    mouse.setFillColor(Color::White);
+
+    RectangleShape guiBase;
+    Vector2f guiPos(0, 0);
+    guiBase.setFillColor(Color(50, 50, 50, 150));
+    guiBase.setSize(Vector2f(250, 515));
+    guiBase.setPosition(guiPos);
+
+    RectangleShape selectedHighlight;
+    selectedHighlight.setFillColor(Color(100, 100, 100, 150));
+    selectedHighlight.setSize(Vector2f(250, 20));
+
+    Text settingsNameText[settingCount];
+    Text settingsValText[settingCount];
+    for (int i = 0; i < settingCount; i++) {
+
+        settingsNameText[i] = Text(settings[i].name, font, 20);
+        settingsNameText[i].setFillColor(Color::White);
+        settingsNameText[i].setPosition(Vector2f(guiBase.getPosition().x, guiBase.getPosition().y + 30 * (i + 1)));
+
+        settingsValText[i] = Text(getSettingString(*settings[i].val, settings[i].rule), font, 20);
+        settingsValText[i].setFillColor(Color::White);
+        settingsValText[i].setPosition(Vector2f(guiBase.getPosition().x + 160, guiBase.getPosition().y + 30 * (i + 1)));
+    }
+
+    selectedHighlight.setPosition(settingsNameText[0].getPosition());
 
     Clock colorAlternateTimer;
 
-    auto&& updateSettings = [&]() {
-        string s = settings[currentSetting].name;
-        if (settings[currentSetting].rule == 4 || settings[currentSetting].rule == 5 || settings[currentSetting].rule == 6)
-            s += *settings[currentSetting].val > 0 ? "True" : "False";
-        else 
-            s += formatFloat(*settings[currentSetting].val * (settings[currentSetting].rule == 1 ? 180.0f / _Pi : 1.0f), 4);
-        settingText.setString(s);
-    };
+    bool hideGUI = false;
 
     while (window.isOpen()) {
 
         //Event management, handle parameter changing
+        bool settingAltered = false;
+        bool settingSelected = false;
         while (window.pollEvent(event)) {
             if(event.type == Event::Closed)
                 window.close();
 
             if (event.type == Event::KeyPressed) {
-
-                if (event.key.code == Keyboard::Up) {
-
-                    *settings[currentSetting].val += settings[currentSetting].delta;
-
-                    if (settings[currentSetting].rule == 2) {
-                        for_each(execution::par_unseq, agentList.begin(), agentList.end(), [&](auto&& a) {
-                            a.updateColor();
-                        });
-                    }
-                    else if (settings[currentSetting].rule == 3) {
-                        shader.setUniform(settings[currentSetting].shaderVar, *settings[currentSetting].val);
-                    }
-                    else if (settings[currentSetting].rule == 4) {
-                        *settings[currentSetting].val *= -1.0f;
-                        colorAlternateTimer.restart();
-                    }
-                    else if (settings[currentSetting].rule == 5) {
-                        *settings[currentSetting].val *= -1.0f;
-                    }
-                    else if (settings[currentSetting].rule == 6) {
-                        *settings[currentSetting].val *= -1.0f;
-                        shader.setUniform("checkOutside", checkOutside > 0 ? true : false);
-                    }
-
-                    updateSettings();
-                }
-                if (event.key.code == Keyboard::Down) {
-
-                    *settings[currentSetting].val -= settings[currentSetting].delta;
-
-                    if (settings[currentSetting].rule == 2) {
-                        for_each(execution::par_unseq, agentList.begin(), agentList.end(), [&](auto&& a) {
-                            a.updateColor();
-                        });
-                    }
-                    else if (settings[currentSetting].rule == 3) {
-                        shader.setUniform(settings[currentSetting].shaderVar, *settings[currentSetting].val);
-                    }
-                    else if (settings[currentSetting].rule == 4) {
-                        *settings[currentSetting].val *= -1.0f;
-                        colorAlternateTimer.restart();
-                    }
-                    else if (settings[currentSetting].rule == 5) {
-                        *settings[currentSetting].val *= -1.0f;
-                    }
-                    else if (settings[currentSetting].rule == 6) {
-                        *settings[currentSetting].val *= -1.0f;
-                        shader.setUniform("checkOutside", checkOutside > 0 ? true : false);
-                    }
-
-                    updateSettings();
+                bool fast = Keyboard::isKeyPressed(Keyboard::LShift);
+                if (event.key.code == Keyboard::Right) {
+                    settingAltered = true;
+                    *settings[currentSetting].val += settings[currentSetting].delta * (fast ? 10 : 1);
                 }
                 if (event.key.code == Keyboard::Left) {
-                    currentSetting = (currentSetting - 1 < 0 ? settingCount - 1 : currentSetting - 1) % settingCount;
-                    updateSettings();
+                    settingAltered = true;
+                    *settings[currentSetting].val -= settings[currentSetting].delta * (fast ? 10 : 1);
                 }
-                if (event.key.code == Keyboard::Right) {
+                if (event.key.code == Keyboard::Up) {
+                    settingSelected = true;
+                    currentSetting = (currentSetting - 1 < 0 ? settingCount - 1 : currentSetting - 1) % settingCount;
+                }
+                if (event.key.code == Keyboard::Down) {
+                    settingSelected = true;
                     currentSetting = (currentSetting + 1) % settingCount;
-                    updateSettings();
+                }
+                if (event.key.code == Keyboard::H) {
+                    hideGUI = !hideGUI;
                 }
             }
+        }
+
+        if (settingAltered || settingSelected) {
+
+            if (settingAltered) {
+                
+                if (settings[currentSetting].rule == 2) {
+                    for_each(execution::par_unseq, agentList.begin(), agentList.end(), [&](auto&& a) {
+                        a.updateColor();
+                        });
+                }
+                else if (settings[currentSetting].rule == 3) {
+                    shader.setUniform(settings[currentSetting].shaderVar, *settings[currentSetting].val);
+                }
+                else if (settings[currentSetting].rule == 4) {
+                    *settings[currentSetting].val *= -1.0f;
+                    colorAlternateTimer.restart();
+                }
+                else if (settings[currentSetting].rule == 5) {
+                    *settings[currentSetting].val *= -1.0f;
+                }
+                else if (settings[currentSetting].rule == 6) {
+                    *settings[currentSetting].val *= -1.0f;
+                    shader.setUniform("checkOutside", checkOutside > 0 ? true : false);
+                }
+            }
+
+            if (settingSelected) {
+                selectedHighlight.setPosition(settingsNameText[currentSetting].getPosition() + Vector2f(0, 2));
+            }
+
+            settingsValText[currentSetting].setString(
+                getSettingString(*settings[currentSetting].val, settings[currentSetting].rule)
+            );
+
         }
 
         if (clock.getElapsedTime().asMilliseconds() >= frameTimeMS) {
@@ -441,27 +476,40 @@ int main()
                 a.updatePos();
                 if(Agent::alternate > 0)
                     a.alternateColor(colorAlternateTimer.getElapsedTime().asMilliseconds());
-                im.setPixel(a.pos.x, a.pos.y, a.color);
                 a.updateDir(im, checkOutside > 0 ? true : false);
             });
             tex.update(im);
 
             //drawing
             rt.draw(Sprite(tex), &shader);
+
+            if (Mouse::isButtonPressed(Mouse::Left)) {
+                Vector2i mousePos = Mouse::getPosition(window);
+                mouse.setPosition(cross(Vector2f(mousePos.x, mousePos.y), invScale));
+                rt.draw(mouse);
+            }
+            
             rt.display();
 
             window.clear();
 
             window.draw(sp);
 
-            window.draw(fpsCounter);
-            window.draw(settingText);
-
+            if (!hideGUI) {
+                window.draw(guiBase);
+                window.draw(selectedHighlight);
+                window.draw(fpsCounter);
+                for (int i = 0; i < settingCount; i++) {
+                    window.draw(settingsNameText[i]);
+                    window.draw(settingsValText[i]);
+                }
+            }
+ 
             window.display();
 
             frameCount++;
             if (timer.getElapsedTime().asMilliseconds() > 1000) {
-                fpsCounter.setString(to_string(frameCount));
+                fpsCounter.setString("FPS: " + to_string(frameCount));
                 frameCount = 0;
                 timer.restart();
             }
