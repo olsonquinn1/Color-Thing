@@ -26,6 +26,10 @@ struct Setting {
 
     string shaderVar;
 
+    Setting(string name, float* val, float delta, int rule, string shaderVar) : Setting(name, val, delta, rule) {
+        this->shaderVar = shaderVar;
+    }
+
     Setting(string name, float* val, float delta, int rule) {
         this->name = name;
         this->delta = delta;
@@ -276,7 +280,7 @@ int main()
 
     float desiredFPS = 1000;
     float frameTimeMS = 1000.0 / desiredFPS;
-    int agentCount = 10000;
+    float agentCount = 10000;
 
     Agent::speed = 1.0f;
 
@@ -329,35 +333,33 @@ int main()
     }
 
     //Agent and environment runtime parameters
-    //0 - none, 1 - angle, 2 - color, 3 - shader parameter, 3 - color alternator, 4 - activate alternating color, 5 - toggle bounce, 6 - toggle outside sample
-    const int settingCount = 16;
+    //0 - none, 1 - angle, 2 - color, 3 - shader parameter, 3 - color alternator, 4 - activate alternating color, 5 - toggle bounce, 6 - toggle outside sample, 7 - agent count adjust
+    const int settingCount = 17;
     Setting settings[settingCount] = {
 
         //Agent Options
-        Setting("Speed:          \t", &Agent::speed, 0.05f, 0),
-        Setting("Max Turn:       \t", &Agent::maxTurn, _Pi / 720.0f, 1),
-        Setting("Bias:           \t", &Agent::biasFactor, 0.05f, 0),
-        Setting("Search Size:    \t", &Agent::searchSize, 1.0f, 0),
-        Setting("Search Angle:   \t", &Agent::searchAngle, _Pi / 360.0f, 1),
-        Setting("Bounce:         \t", &Agent::bounce, 0.0f, 5),
+        Setting("Agent Count:", &agentCount, 10, 7),
+        Setting("Speed:", &Agent::speed, 0.05f, 0),
+        Setting("Max Turn:", &Agent::maxTurn, _Pi / 720.0f, 1),
+        Setting("Bias:", &Agent::biasFactor, 0.05f, 0),
+        Setting("Search Size:", &Agent::searchSize, 1.0f, 0),
+        Setting("Search Angle:", &Agent::searchAngle, _Pi / 360.0f, 1),
+        Setting("Bounce:", &Agent::bounce, 0.0f, 5),
 
         //Shader Options
-        Setting("Dim Rate:       \t", &dimRate, 0.0005f, 3),
-        Setting("Disperse:       \t", &disperseFactor, 0.005f, 3),
-        Setting("Outside Sample: \t", &checkOutside, 0.0f, 6),
+        Setting("Dim Rate:", &dimRate, 0.0005f, 3, "dimRate"),
+        Setting("Disperse:", &disperseFactor, 0.005f, 3, "disperseFactor"),
+        Setting("Outside Sample:", &checkOutside, 0.0f, 6, "checkOutside"),
 
         //Color Options
-        Setting("PaletteR:       \t", &Agent::palette.x, 0.01f, 2),
-        Setting("PaletteG:       \t", &Agent::palette.y, 0.01f, 2),
-        Setting("PaletteB:       \t", &Agent::palette.z, 0.01f, 2),
-        Setting("Color Alternate:\t", &Agent::alternate, 0.0f, 4),
-        Setting("R Alternate:    \t", &Agent::alternatePeriodR, 0.25f, 2),
-        Setting("G Alternate:    \t", &Agent::alternatePeriodG, 0.25f, 2),
-        Setting("B Alternate:    \t", &Agent::alternatePeriodB, 0.25f, 2)
+        Setting("PaletteR:", &Agent::palette.x, 0.01f, 2),
+        Setting("PaletteG:", &Agent::palette.y, 0.01f, 2),
+        Setting("PaletteB:", &Agent::palette.z, 0.01f, 2),
+        Setting("Color Alternate:", &Agent::alternate, 0.0f, 4),
+        Setting("R Alternate:", &Agent::alternatePeriodR, 0.25f, 2),
+        Setting("G Alternate:", &Agent::alternatePeriodG, 0.25f, 2),
+        Setting("B Alternate:", &Agent::alternatePeriodB, 0.25f, 2)
     };
-    settings[6].shaderVar = "dimRate";
-    settings[7].shaderVar = "disperseFactor";
-    settings[8].shaderVar = "checkOutside";
 
     int currentSetting = 0;
 
@@ -409,14 +411,16 @@ int main()
                 window.close();
 
             if (event.type == Event::KeyPressed) {
-                bool fast = Keyboard::isKeyPressed(Keyboard::LShift);
+                float multiplier = 1;
+                multiplier *= Keyboard::isKeyPressed(Keyboard::LShift) ? 10 : 1;
+                multiplier *= Keyboard::isKeyPressed(Keyboard::LControl) ? 10 : 1;
                 if (event.key.code == Keyboard::Right) {
                     settingAltered = true;
-                    *settings[currentSetting].val += settings[currentSetting].delta * (fast ? 10 : 1);
+                    *settings[currentSetting].val += settings[currentSetting].delta * multiplier;
                 }
                 if (event.key.code == Keyboard::Left) {
                     settingAltered = true;
-                    *settings[currentSetting].val -= settings[currentSetting].delta * (fast ? 10 : 1);
+                    *settings[currentSetting].val -= settings[currentSetting].delta * multiplier;
                 }
                 if (event.key.code == Keyboard::Up) {
                     settingSelected = true;
@@ -454,6 +458,14 @@ int main()
                 else if (settings[currentSetting].rule == 6) {
                     *settings[currentSetting].val *= -1.0f;
                     shader.setUniform("checkOutside", checkOutside > 0 ? true : false);
+                }
+                else if (settings[currentSetting].rule == 7) {
+                    while (agentList.size() < agentCount) {
+                        agentList.push_back(Agent());
+                    }
+                    while (agentList.size() > agentCount) {
+                        agentList.pop_back();
+                    }
                 }
             }
 
