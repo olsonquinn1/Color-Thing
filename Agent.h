@@ -5,20 +5,6 @@
 using namespace std;
 using namespace sf;
 
-struct Vector3d {
-    double x;
-    double y;
-    double z;
-    Vector3d() : x(0), y(0), z(0) {};
-    Vector3d(double x, double y, double z) : x(x), y(y), z(z) {};
-};
-
-struct Vector2d {
-    double x;
-    double y;
-    Vector2d(double x, double y) : x(x), y(y) {};
-};
-
 class Agent {
 public:
 
@@ -69,9 +55,9 @@ private:
     Vector2f vel;
     float dir;
     Color color;
-    Vector3d colorBase;
+    Vector3f colorBase;
 
-    Vector3d v3d(Vector3i v);
+    Vector3f v3d(Vector3i v);
 
     float cosfRatio(float val);
 
@@ -86,4 +72,6 @@ private:
     Vector3f norm(Vector3f v);
 
     Vector3f getAvgColor(Image& im, float dist, float dirDelta);
+
+    Vector3f alternateAvg(Image& im, float dist, float dirDelta);
 };

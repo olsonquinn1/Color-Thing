@@ -1,0 +1,24 @@
+setting up new sfml project:
+
+move the following from _IntoDir into main project directory:
+	openal32.dll
+	sfml-audio-d-2.dll
+	sfml-graphics-d-2.dll
+	sfml-network-d-2.dll
+	sfml-system-d-2.dll
+	sfml-window-d-2-.dll
+	If font required, move Roboto-Light.ttf 
+
+C++/General:
+	Additional Include Directiories: _BulkDependencies/include
+C:\Users\olson\source\repos\SFML\_Bulk Dependencies\include
+
+Linker/General:
+	Additional Library Directories: _BulkDependencies/lib
+C:\Users\olson\source\repos\SFML\_Bulk Dependencies\lib
+
+Linker/Input:
+	Additional Dependencies:
+sfml-graphics-d.lib;sfml-audio-d.lib;sfml-window-d.lib;sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)
+
+	

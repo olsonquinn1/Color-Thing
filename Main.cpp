@@ -91,6 +91,7 @@ Vector2f cross(Vector2f a, Vector2f b) { return Vector2f(a.x * b.x, a.y * b.y); 
 
 int main()
 {
+
     Agent::width = WIDTH;
     Agent::height = HEIGHT;
 

@@ -1,11 +1,9 @@
-#version 120
+#version 130
 
 uniform sampler2D texture;
 uniform vec2 imageSize;
 uniform float disperseFactor;
 uniform float dimRate;
-
-varying out vec4 pixel;
 
 void main() {
     float xStep = 1 / imageSize.x;
@@ -34,9 +32,11 @@ void main() {
     avg.z /= count;
 
     vec4 original = texture2D(texture, gl_TexCoord[0].xy);
-
+    vec4 pixel;
     pixel.x = original.x + (avg.x - original.x) * disperseFactor - dimRate;
     pixel.y = original.y + (avg.y - original.y) * disperseFactor - dimRate;
     pixel.z = original.z + (avg.z - original.z) * disperseFactor - dimRate;
     pixel.w = original.w;
+
+    gl_FragColor = pixel;
 }

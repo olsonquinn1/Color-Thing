@@ -16,7 +16,7 @@ Agent::Agent() {
     dir = (float)(rand() % 10000) / 10000 * 2 * pi;
     vel = Vector2f(cos(dir), sin(dir));
 
-    colorBase = Vector3d(
+    colorBase = Vector3f(
         (double)(rand() % 206 + 50),
         (double)(rand() % 206 + 50),
         (double)(rand() % 206 + 50)
@@ -85,14 +85,14 @@ void Agent::updatePos() {
     pos.y += vel.y * speed;
 
     //wrap agent positions around screen
-    if (pos.x < 0)
-        pos.x = width - 1;
-    else if (pos.x >= width)
-        pos.x = 0;
-    if (pos.y < 0)
-        pos.y = height - 1;
-    else if (pos.y >= height)
-        pos.y = 0;
+    while (pos.x < 0)
+        pos.x += width;
+    while(pos.x >= width)
+        pos.x -= width;
+    while(pos.y < 0)
+        pos.y += height;
+    while(pos.y >= height)
+        pos.y -= height;
 }
 
 void Agent::updateDir(Image& im) {
@@ -113,9 +113,7 @@ void Agent::updateDir(Image& im) {
     float rval = compare(me, r);
     float mval = compare(me, f);
     bias = (lval - rval) * (1 - mval);
-    if (debug) {
-        cout << "l: " << lval << "\tr: " << rval << "\tm: " << mval << "\tbias: " << bias << "\n";
-    }
+
     //biasFactor affects how heavily the bias affects the decision
     bias = bias * biasFactor;
     float val = (float)(rand() % 2000) / 1000.0f - 1.0f + bias;
@@ -126,11 +124,8 @@ void Agent::updateDir(Image& im) {
 }
 
 //private members
-Vector3f cross(Vector3f a, Vector3f b) { return Vector3f(a.x * b.x, a.y * b.y, a.z * b.z); }
-Vector3f cross(Vector3f a, float b) { return Vector3f(a.x * b, a.y * b, a.z * b); }
-
-Vector3d Agent::v3d(Vector3i v) {
-    return Vector3d((double) v.x, (double) v.y, (double) v.z);
+Vector3f Agent::v3d(Vector3i v) {
+    return Vector3f((double) v.x, (double) v.y, (double) v.z);
 }
 
 float Agent::cosfRatio(float val) {
@@ -151,7 +146,6 @@ bool Agent::edgeFunc(Vector2i a, Vector2i b, Vector2i c) {
 }
 
 float Agent::compare(Vector3f a, Vector3f b) {
-    //const float maxDist = sqrt(3 * pow(255, 2));
     const float maxDist = sqrt(3);
     float val = (
         maxDist - sqrt(
@@ -165,12 +159,14 @@ float Agent::compare(Vector3f a, Vector3f b) {
 
 Vector3f Agent::norm(Vector3f v) {
     float mag = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
-    if (false && mag == 0) {
+    if (mag == 0) {
         return Vector3f(0, 0, 0);
     }
     return Vector3f((float)v.x / mag, (float)v.y / mag, (float)v.z / mag);
 }
 
+//rasterization algorithm, but instead of draw the pixels within the triangle, we are reading them 
+//to determine the average color within the area of the triangle
 Vector3f Agent::getAvgColor(Image& im, float dist, float dirDelta) {
 
     vector<Vector2i> points = {
@@ -229,4 +225,22 @@ Vector3f Agent::getAvgColor(Image& im, float dist, float dirDelta) {
     }
 
     return Vector3f(avg[0], avg[1], avg[2]);
+}
+
+Vector3f Agent::alternateAvg(Image& im, float dist, float dirDelta) {
+
+    Vector2i pts[3] = {
+        Vector2i(pos.x, pos.y),
+        Vector2i(pos.x + dist * cos(dirDelta + pi / 12), pos.y + dist * sin(dirDelta + pi / 12)),
+        Vector2i(pos.x + dist * cos(dirDelta - pi / 12), pos.y + dist * sin(dirDelta - pi / 12))
+    };
+
+    //index -> 0: top, 1: mid, 2: bot
+    vector<int> ptsSortY = { 0, 1, 2 };
+    sort(ptsSortY.begin(), ptsSortY.end(), [&](int l, int r) {
+        return pts[l].y > pts[r].y;
+    });
+    
+    Vector2i midPt();
+    
 }
