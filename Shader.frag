@@ -4,7 +4,6 @@ uniform sampler2D texture;
 uniform vec2 imageSize;
 uniform float disperseFactor;
 uniform float dimRate;
-uniform bool checkOutside;
 
 varying out vec4 pixel;
 
@@ -20,13 +19,8 @@ void main() {
     for(int dx = -1; dx <= 1; dx++) {
         float x = myPos.x + xStep * dx;
 
-        if(x < 0 || x > 1 && !checkOutside) continue;
-
         for(int dy = -1; dy <= 1; dy++) {
             float y = myPos.y + yStep * dy;
-
-            if(y < 0 || y > 1 && !checkOutside) continue;
-            if(dx == 0 && dy == 0) continue;
 
             vec4 c = texture2D(texture, vec2(x, y));
             count++;

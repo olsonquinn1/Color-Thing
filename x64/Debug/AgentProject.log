@@ -1,21 +1,59 @@
-﻿  Main.cpp
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(26,47): warning C4305: 'initializing': truncation from 'long double' to 'float'
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(29,46): warning C4305: 'initializing': truncation from 'long double' to 'float'
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(39,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+﻿  Agent.cpp
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(14,20): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(40,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(15,20): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(41,51): warning C4244: '=': conversion from 'long double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(103,21): warning C4244: 'return': conversion from 'long double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(122,11): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(125,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(131,32): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(29,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(30,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(31,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(36,39): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(36,27): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(37,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(39,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(40,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(41,27): warning C4244: '=': conversion from 'double' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(45,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(49,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(53,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(60,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(66,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(72,33): warning C4244: '*=': conversion from 'float' to 'sf::Uint8', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(89,23): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(93,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(100,27): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(100,20): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(131,13): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(188,28): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -24,7 +62,7 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(131,32): war
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(131,25): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(188,21): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
           [
               T=float
@@ -33,27 +71,43 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(131,25): war
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(132,69): warning C4244: 'argument': conversion from 'long double' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(189,64): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
+          [
+              T=float
+          ]
+          and
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(132,28): warning C4244: 'argument': conversion from 'long double' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(189,24): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
+          [
+              T=float
+          ]
+          and
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(133,69): warning C4244: 'argument': conversion from 'long double' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(190,64): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
+          [
+              T=float
+          ]
+          and
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(133,28): warning C4244: 'argument': conversion from 'long double' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(190,24): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
           with
+          [
+              T=float
+          ]
+          and
           [
               T=int
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(139,20): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(200,16): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
           with
           [
               _Ty=int
@@ -62,7 +116,7 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(139,20): war
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(138,20): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(199,16): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
           with
           [
               _Ty=int
@@ -71,7 +125,7 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(138,20): war
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(143,20): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(204,16): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
           with
           [
               _Ty=int
@@ -80,7 +134,7 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(143,20): war
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(142,20): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(203,16): warning C4244: 'argument': conversion from 'const _Ty' to 'T', possible loss of data
           with
           [
               _Ty=int
@@ -89,119 +143,55 @@ C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(142,20): war
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(150,20): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(211,16): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(152,24): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(215,20): warning C4244: 'initializing': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(170,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(171,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(172,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(179,16): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(183,25): warning C4244: 'return': conversion from 'long double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(192,16): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(200,80): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(200,76): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(200,57): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(200,48): warning C4244: 'argument': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(201,90): warning C4244: 'argument': conversion from 'float' to 'sf::Uint8', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(201,77): warning C4244: 'argument': conversion from 'float' to 'sf::Uint8', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(201,64): warning C4244: 'argument': conversion from 'float' to 'sf::Uint8', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(259,20): warning C4244: 'argument': conversion from 'const _Ty' to 'sf::Uint8', possible loss of data
-          with
-          [
-              _Ty=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(258,20): warning C4244: 'argument': conversion from 'const _Ty' to 'sf::Uint8', possible loss of data
-          with
-          [
-              _Ty=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(257,20): warning C4244: 'argument': conversion from 'const _Ty' to 'sf::Uint8', possible loss of data
-          with
-          [
-              _Ty=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(274,47): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(274,36): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(274,25): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
-          with
-          [
-              T=int
-          ]
-          and
-          [
-              T=float
-          ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(282,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(286,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(309,26): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(310,31): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(336,81): warning C4305: 'initializing': truncation from 'long double' to 'float'
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(389,43): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\execution(1159): message : see reference to function template instantiation 'auto main::<lambda_1>::operator ()<Agent&>(_T1) const' being compiled
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(237,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(238,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Agent.cpp(239,32): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+  Main.cpp
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(66,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(68,28): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(81,41): warning C4244: 'argument': conversion from 'long double' to 'float', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(101,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(106,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(130,26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(131,31): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(167,44): warning C4553: '==': result of expression not used; did you intend '='?
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(180,5): warning C4305: 'argument': truncation from 'long double' to 'float'
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(298,103): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(307,122): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(343,85): warning C4244: 'argument': conversion from 'sf::Int32' to 'float', possible loss of data
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\xutility(363): message : see reference to function template instantiation 'auto main::<lambda_23>::operator ()<Agent&>(_T1) const' being compiled
           with
           [
               _T1=Agent &
           ]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\execution(1194): message : see reference to function template instantiation 'void std::_For_each_ivdep<Agent*,_Fn>(_FwdIt,const _FwdIt,_Fn)' being compiled
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\execution(1159): message : see reference to function template instantiation 'decltype(auto) std::_Ref_fn<_Fn>::operator ()<Agent&>(Agent &)' being compiled
           with
           [
-              _Fn=main::<lambda_1>,
+              _Fn=main::<lambda_23>
+          ]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.35.32215\include\execution(1194): message : see reference to function template instantiation 'void std::_For_each_ivdep<Agent*,std::_Ref_fn<_Fn>>(_FwdIt,const _FwdIt,std::_Ref_fn<_Fn>)' being compiled
+          with
+          [
+              _Fn=main::<lambda_23>,
               _FwdIt=Agent *
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(391,14): message : see reference to function template instantiation 'void std::for_each<const std::execution::parallel_unsequenced_policy&,std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,main::<lambda_1>,0>(_ExPo,_FwdIt,_FwdIt,_Fn) noexcept' being compiled
+C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(345,14): message : see reference to function template instantiation 'void std::for_each<const std::execution::parallel_unsequenced_policy&,std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Ty>>>,main::<lambda_23>,0>(_ExPo,_FwdIt,_FwdIt,_Fn) noexcept' being compiled
           with
           [
               _Ty=Agent,
               _ExPo=const std::execution::parallel_unsequenced_policy &,
               _FwdIt=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<Agent>>>,
-              _Fn=main::<lambda_1>
+              _Fn=main::<lambda_23>
           ]
-C:\Users\olson\source\repos\SFML\AgentProject\AgentProject\Main.cpp(389,34): warning C4244: 'argument': conversion from 'T' to 'unsigned int', possible loss of data
-          with
-          [
-              T=float
-          ]
+  Generating Code...
   AgentProject.vcxproj -> C:\Users\olson\source\repos\SFML\AgentProject\x64\Debug\AgentProject.exe
