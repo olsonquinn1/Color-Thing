@@ -52,13 +52,7 @@ struct SettingGroup {
     string name;
     vector<Setting> settings;
 
-    SettingGroup(string name) {
-        this->name = name;
-    }
-
-    void updatePositionBase() {
-
-    }
+    SettingGroup(string name) : name(name) {}
 
 };
 
@@ -87,7 +81,44 @@ string getSettingString(float val, int rule) {
         return formatFloat(val, 2);
 }
 
-Vector2f cross(Vector2f a, Vector2f b) { return Vector2f(a.x * b.x, a.y * b.y); }
+void updatePreview(vector<ConvexShape> &searchPreview, Vector2f previewPos, float previewScale) {
+    //0: left, 1: front, 2: right
+    searchPreview[0].setPointCount(3);
+    searchPreview[0].setFillColor(Color(255, 0, 0, 100));
+    searchPreview[0].setPoint(0, Vector2f(0, 0) + previewPos);
+    searchPreview[0].setPoint(1, Vector2f(
+        previewScale * cos(_Pi / -2.0f + Agent::searchAngleOffset + Agent::searchAngle * 3.0f / 2.0f),
+        previewScale * sin(_Pi / -2.0f + Agent::searchAngleOffset + Agent::searchAngle * 3.0f / 2.0f)
+    ) + previewPos);
+    searchPreview[0].setPoint(2, Vector2f(
+        previewScale * cos(_Pi / -2.0f + Agent::searchAngleOffset + Agent::searchAngle / 2.0f),
+        previewScale * sin(_Pi / -2.0f + Agent::searchAngleOffset + Agent::searchAngle / 2.0f)
+    ) + previewPos);
+
+    searchPreview[1].setPointCount(3);
+    searchPreview[1].setFillColor(Color(0, 255, 0, 100));
+    searchPreview[1].setPoint(0, Vector2f(0, 0) + previewPos);
+    searchPreview[1].setPoint(1, Vector2f(
+        previewScale * cos(_Pi / -2.0f + Agent::searchAngle / 2.0f),
+        previewScale * sin(_Pi / -2.0f + Agent::searchAngle / 2.0f)
+    ) + previewPos);
+    searchPreview[1].setPoint(2, Vector2f(
+        previewScale * cos(_Pi / -2.0f - Agent::searchAngle / 2.0f),
+        previewScale * sin(_Pi / -2.0f - Agent::searchAngle / 2.0f)
+    ) + previewPos);
+
+    searchPreview[2].setPointCount(3);
+    searchPreview[2].setFillColor(Color(0, 0, 255, 100));
+    searchPreview[2].setPoint(0, Vector2f(0, 0) + previewPos);
+    searchPreview[2].setPoint(1, Vector2f(
+        previewScale * cos(_Pi / -2.0f - Agent::searchAngleOffset - Agent::searchAngle / 2.0f),
+        previewScale * sin(_Pi / -2.0f - Agent::searchAngleOffset - Agent::searchAngle / 2.0f)
+    ) + previewPos);
+    searchPreview[2].setPoint(2, Vector2f(
+        previewScale * cos(_Pi / -2.0f - Agent::searchAngleOffset - Agent::searchAngle * 3.0f / 2.0f),
+        previewScale * sin(_Pi / -2.0f - Agent::searchAngleOffset - Agent::searchAngle * 3.0f / 2.0f)
+    ) + previewPos);
+}
 
 int main()
 {
@@ -98,7 +129,7 @@ int main()
     Vector2f scale((float)WINDOW_WIDTH / WIDTH, (float)WINDOW_HEIGHT / HEIGHT);
     Vector2f invScale(1.0f / scale.x, 1.0f / scale.y);
 
-    float desiredFPS = 1000;
+    float desiredFPS = 500;
     float frameTimeMS = 1000.0 / desiredFPS;
     float agentCount = 10000;
 
@@ -150,6 +181,10 @@ int main()
         agentList.push_back(Agent());
     }
 
+    Vector2f previewPos(100, 450);
+    vector<ConvexShape> searchPreview = { ConvexShape(), ConvexShape(), ConvexShape() };
+    updatePreview(searchPreview, previewPos, 50);
+
     //Agent and environment runtime parameters
     //formatting rule: 0 - decimal number, 1 - scaled decimal, 2 - integer number, 3 - angle , 4 - boolean
     int currentSetting = 0;
@@ -177,9 +212,23 @@ int main()
         Setting("Max Turn:", &Agent::maxTurn, _Pi / 720.0f, 3, [&]() {}),
         Setting("Bias:", &Agent::biasFactor, 0.05f, 0, [&]() {}),
         Setting("Search Size:", &Agent::searchSize, 1.0f, 0, [&]() {}),
-        Setting("Search Angle:", &Agent::searchAngle, _Pi / 360.0f, 3, [&]() {})
+        Setting("Search Angle:", &Agent::searchAngle, _Pi / 360.0f, 3, [&]() {
+            updatePreview(searchPreview, previewPos, 50);
+        }),
+        Setting("Angle Offset:", &Agent::searchAngleOffset, _Pi / 360.0f, 3, [&]() {
+            updatePreview(searchPreview, previewPos, 50);
+        }),
+        Setting("Search Model:", &Agent::searchModel, 2.0f, 2, [&]() {
+            if (Agent::searchModel < 1)
+                Agent::searchModel = 1;
+            else if (Agent::searchModel > 2)
+                Agent::searchModel = 2;
+        }),
+        Setting("FPS Cap:", &desiredFPS, 1, 2, [&]() {
+            float frameTimeMS = 1000.0 / desiredFPS;
+        })
     };
-
+    
     groups[1].settings = {
         Setting("Dim Rate:", &dimRate, 0.0001f, 1, "dimRate", [&]() {
             shader.setUniform(
@@ -346,14 +395,19 @@ int main()
             });
             tex.update(im);
 
-            //draw to world to render texture
+            //draw world to render texture
+            //note: this render texture is never cleared, thus changes made are persistent
             rt.draw(Sprite(tex), &shader);
 
             if (Mouse::isButtonPressed(Mouse::Left)) {
                 Vector2i pixelPos = Mouse::getPosition(window);
                 Vector2f worldPos = window.mapPixelToCoords(pixelPos);
 
-                mouse.setPosition(cross(worldPos, invScale));
+                mouse.setPosition(Vector2f(
+                    worldPos.x * invScale.x,
+                    worldPos.y * invScale.y
+                ));
+
                 rt.draw(mouse);
             }
             
@@ -372,6 +426,9 @@ int main()
                 for (int i = 0; i < groups[currentGroup].settings.size(); i++) {
                     window.draw(groups[currentGroup].settings[i].settingText);
                     window.draw(groups[currentGroup].settings[i].valText);
+                }
+                if(currentGroup == 0) for (int i = 0; i < 3; i++) {
+                    window.draw(searchPreview[i]);
                 }
             }
             
