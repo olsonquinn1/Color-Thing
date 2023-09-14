@@ -8,9 +8,8 @@
 using namespace std;
 using namespace sf;
 
-Edge::Edge(int x1, int y1,
-    int x2, int y2)
-{
+Edge::Edge(int x1, int y1, int x2, int y2) {
+
     if (y1 < y2) {
         X1 = x1;
         Y1 = y1;
@@ -23,6 +22,7 @@ Edge::Edge(int x1, int y1,
         X2 = x1;
         Y2 = y1;
     }
+
 }
 
 Span::Span(int x1, int x2)
@@ -132,7 +132,7 @@ void Agent::updateDir(Image& im) {
 
     //determine avg color in zones in front, left, and right of agent
 
-    Vector3f me = Vector3f(color.r, color.g, color.b);
+    Vector3f me = norm(Vector3f(color.r, color.g, color.b));
 
     //treat colors as a 3d vector for comparing
     //normalize average color to ignore color intensity when deciding which way to go
@@ -140,28 +140,19 @@ void Agent::updateDir(Image& im) {
     Vector3f l;
     Vector3f f;
     Vector3f r;
-    if ((int) searchModel == 1) {
-        l = norm(getAvgColor(im, searchSize, searchAngle, searchAngle + searchAngleOffset));
-        f = norm(getAvgColor(im, searchSize, searchAngle, 0));
-        r = norm(getAvgColor(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
-    }
-    else if((int) searchModel == 2) {
-        l = norm(alternateAvg(im, searchSize, searchAngle, searchAngle + searchAngleOffset));
-        f = norm(alternateAvg(im, searchSize, searchAngle, 0));
-        r = norm(alternateAvg(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
-    }
-    
+
+    l = norm(getAvgColor(im, searchSize, searchAngle, searchAngle + searchAngleOffset));
+    f = norm(getAvgColor(im, searchSize, searchAngle, 0));
+    r = norm(getAvgColor(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
+
     float lval = compare(me, l);
     float rval = compare(me, r);
     float mval = compare(me, f);
-    float bias = (lval - rval) * (1 - mval);
-
+    float bias = (lval - rval) * (1 - mval) * 255;
     //biasFactor affects how heavily the bias affects the decision
-    bias = bias * biasFactor;
-    float val = ((float)(rand() % 2000) / 1000.0f - 1.0f) + bias;
-    alterDir(
-        val * maxTurn
-    );
+    float val = ((float)(rand() % 2000) / 1000.0f - 1.0f) + bias * biasFactor;
+    alterDir( val * turnFactor );
+    debug = false;
 }
 
 //private members
@@ -183,7 +174,7 @@ bool Agent::edgeFunc(Vector2i a, Vector2i b, Vector2i c) {
 }
 
 float Agent::compare(Vector3f a, Vector3f b) {
-    const float maxDist = sqrt(3); //maximum difference between two 3d normalized vectors 
+    const float maxDist = sqrt(2); //maximum difference between two 3d normalized vectors 
     float val = (
         maxDist - sqrt(
             pow(a.x - b.x, 2) +
@@ -195,157 +186,83 @@ float Agent::compare(Vector3f a, Vector3f b) {
 }
 
 Vector3f Agent::norm(Vector3f v) {
+    const Vector3f zero(sqrt(2) / 2, sqrt(2) / 2, sqrt(2) / 2);
     float mag = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
     if (mag == 0) {
-        return Vector3f(0, 0, 0);
+        return zero;
     }
-    return Vector3f((float)v.x / mag, (float)v.y / mag, (float)v.z / mag);
+    return Vector3f(v.x / mag, v.y / mag, v.z / mag);
 }
 
 //rasterization algorithm, but instead of drawing the pixels within the triangle, we are reading them 
 //to determine the average color within the area of the triangle
-Vector3f Agent::getAvgColor(Image& im, float dist, float angle, float offset) {
-
-    //calculate points on triangle to check
-    vector<Vector2i> points = {
-        Vector2i(pos.x, pos.y),
-        Vector2i(
-            pos.x + dist * cos(dir + offset + angle / 2),
-            pos.y + dist * sin(dir + offset + angle / 2)
-        ),
-        Vector2i(
-            pos.x + dist * cos(dir + offset - angle / 2),
-            pos.y + dist * sin(dir + offset - angle / 2)
-        )
-    };
-
-    //determine bounding box of triangle
-    Vector2f search[2] = {
-        Vector2f(
-            min(min(points[0].x, points[1].x), points[2].x),
-            min(min(points[0].y, points[1].y), points[2].y)
-        ),
-        Vector2f(
-            max(max(points[0].x, points[1].x), points[2].x),
-            max(max(points[0].y, points[1].y), points[2].y)
-        )
-    };
-
-    int count = 0;
-    int avg[3] = { 0, 0, 0 };
-
-    //get avg color of pixels within the triangle
-    for (int x = search[0].x; x <= search[1].x; x++) {
-
-        if (x < 0 || x >= width) continue;
-
-        for (int y = search[0].y; y <= search[1].y; y++) {
-
-            if (y < 0 || y >= height) continue;
-
-            bool inside =
-                edgeFunc(points[0], points[1], Vector2i(x, y))
-                && edgeFunc(points[1], points[2], Vector2i(x, y))
-                && edgeFunc(points[2], points[0], Vector2i(x, y));
-
-            if (inside) {
-
-                count++;
-
-                Color c = im.getPixel(x, y);
-
-                avg[0] += c.r;
-                avg[1] += c.g;
-                avg[2] += c.b;
-            }
-        }
-    }
-    if (count > 0) {
-        avg[0] = (float)avg[0] / count;
-        avg[1] = (float)avg[1] / count;
-        avg[2] = (float)avg[2] / count;
-    }
-
-    return Vector3f(avg[0], avg[1], avg[2]);
-}
-
-Vector3f Agent::getSpanAvg(Image& im, const Span& span, int y)
+void Agent::getSpanSum(Vector3i& sum, int& count, Image& im, const Span& span, int y)
 {
     Vector2u size = im.getSize();
     int xdiff = span.X2 - span.X1;
     if (xdiff == 0)
-        return Vector3f(0, 0, 0);
+        return;
 
     float factor = 0.0f;
     float factorStep = 1.0f / (float)xdiff;
 
-    Vector3f avg(0, 0, 0);
-    int badCount = 0;
-    int count = 0;
     for (int x = span.X1; x < span.X2; x++) {
         if (x < 0 || x >= size.x) 
             continue;
 
         count++;
         Color c = im.getPixel(x, y);
-        avg += Vector3f(c.r, c.g, c.b);
+        sum += Vector3i(c.r, c.g, c.b);
         factor += factorStep;
     }
-    if (count <= 0) count = 1;
-    return Vector3f(avg.x / count, avg.y / count, avg.z / count);
 }
 
-Vector3f Agent::getEdgeAvg(Image& im, const Edge& e1, const Edge& e2)
+void Agent::getEdgeSum(Vector3i& sum, int& count, Image& im, const Edge& e1, const Edge& e2)
 {
     Vector2u size = im.getSize();
 
-    //ignore if edge is horizontal
-    float e1ydiff = (float)(e1.Y2 - e1.Y1);
-    if (e1ydiff == 0.0f)
-        return Vector3f(0, 0, 0);
+    //ignore if either edge is horizontal
+    int e1ydiff = (e1.Y2 - e1.Y1);
+    if (e1ydiff == 0)
+        return;
 
-    float e2ydiff = (float)(e2.Y2 - e2.Y1);
-    if (e2ydiff == 0.0f)
-        return Vector3f(0, 0, 0);
+    int e2ydiff = (e2.Y2 - e2.Y1);
+    if (e2ydiff == 0)
+        return;
 
-    float e1xdiff = (float)(e1.X2 - e1.X1);
-    float e2xdiff = (float)(e2.X2 - e2.X1);
+    int e1xdiff = (e1.X2 - e1.X1);
+    int e2xdiff = (e2.X2 - e2.X1);
 
     float factor1 = (float)(e2.Y1 - e1.Y1) / e1ydiff;
     float factorStep1 = 1.0f / e1ydiff;
     float factor2 = 0.0f;
     float factorStep2 = 1.0f / e2ydiff;
 
-    Vector3f avg(0, 0, 0);
-    int count = 0;
     for (int y = e2.Y1; y < e2.Y2; y++) {
         if (y < 0 || y >= size.y) {
             continue;
         }
-
-        count++;
-
+        
         Span span(
             e1.X1 + (int)(e1xdiff * factor1),
             e2.X1 + (int)(e2xdiff * factor2));
-        avg += getSpanAvg(im, span, y);
+
+        getSpanSum(sum, count, im, span, y);
 
         factor1 += factorStep1;
         factor2 += factorStep2;
     }
-    if (count <= 0) count = 1;
-    return Vector3f(avg.x / count, avg.y / count, avg.z / count);
 }
 
-Vector3f Agent::alternateAvg(Image& im, float dist, float angle, float offset) {
+Vector3f Agent::getAvgColor(Image& im, float dist, float angle, float offset) {
 
-    Vector2i pts[3] = {
-        Vector2i(pos.x, pos.y),
-        Vector2i(
+    Vector2f pts[3] = {
+        Vector2f(pos.x, pos.y),
+        Vector2f(
             pos.x + dist * cos(dir + offset + angle / 2),
             pos.y + dist * sin(dir + offset + angle / 2)
         ),
-        Vector2i(
+        Vector2f(
             pos.x + dist * cos(dir + offset - angle / 2),
             pos.y + dist * sin(dir + offset - angle / 2)
         )
@@ -357,7 +274,7 @@ Vector3f Agent::alternateAvg(Image& im, float dist, float angle, float offset) {
         Edge(pts[2].x, pts[2].y, pts[0].x, pts[0].y)
     };
 
-    //split triangle into two parts and search the pixels between each edge set
+    //split triangle into two parts and search the pixels in the spans between each edge set
     int maxLength = 0;
     int longEdge = 0;
     for (int i = 0; i < 3; i++) {
@@ -370,12 +287,15 @@ Vector3f Agent::alternateAvg(Image& im, float dist, float angle, float offset) {
     int shortEdge1 = (longEdge + 1) % 3;
     int shortEdge2 = (longEdge + 2) % 3;
 
-    Vector3f avg(0, 0, 0);
+    Vector3i sum(0, 0, 0);
 
-    avg += getEdgeAvg(im, edges[longEdge], edges[shortEdge1]);
-    avg += getEdgeAvg(im, edges[longEdge], edges[shortEdge2]);
+    int count = 0;
 
-    avg = Vector3f(avg.x / 2, avg.y / 2, avg.z / 2);
+    getEdgeSum(sum, count, im, edges[longEdge], edges[shortEdge1]);
+    getEdgeSum(sum, count, im, edges[longEdge], edges[shortEdge2]);
 
-    return avg;
+    if (count == 0)
+        count = 1;
+
+    return Vector3f((float)sum.x / count, (float)sum.y / count, (float)sum.z / count);
 }

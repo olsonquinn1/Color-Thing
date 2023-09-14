@@ -9,6 +9,7 @@
 #include <string>
 #include <functional>
 #include "agent.h"
+#include "PerlinNoise.h"
 
 #define WIDTH 800
 #define WINDOW_WIDTH 1920
@@ -209,7 +210,7 @@ int main()
             }
         }),
         Setting("Speed:", &Agent::speed, 0.05f, 0, [&]() {}),
-        Setting("Max Turn:", &Agent::maxTurn, _Pi / 720.0f, 3, [&]() {}),
+        Setting("Turn Factor:", &Agent::turnFactor, _Pi / 720.0f, 3, [&]() {}),
         Setting("Bias:", &Agent::biasFactor, 0.05f, 0, [&]() {}),
         Setting("Search Size:", &Agent::searchSize, 1.0f, 0, [&]() {}),
         Setting("Search Angle:", &Agent::searchAngle, _Pi / 360.0f, 3, [&]() {
@@ -218,15 +219,6 @@ int main()
         Setting("Angle Offset:", &Agent::searchAngleOffset, _Pi / 360.0f, 3, [&]() {
             updatePreview(searchPreview, previewPos, 50);
         }),
-        Setting("Search Model:", &Agent::searchModel, 2.0f, 2, [&]() {
-            if (Agent::searchModel < 1)
-                Agent::searchModel = 1;
-            else if (Agent::searchModel > 2)
-                Agent::searchModel = 2;
-        }),
-        Setting("FPS Cap:", &desiredFPS, 1, 2, [&]() {
-            float frameTimeMS = 1000.0 / desiredFPS;
-        })
     };
     
     groups[1].settings = {
@@ -437,7 +429,6 @@ int main()
             frameCount++;
             if (timer.getElapsedTime().asMilliseconds() > 1000) {
                 fpsCounter.setString("FPS: " + to_string(frameCount));
-                agentList[0].debug = true;
                 frameCount = 0;
                 timer.restart();
             }

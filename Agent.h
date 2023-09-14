@@ -25,13 +25,11 @@ public:
     inline static const float pi = 3.141592653589793f;
 
     inline static float speed = 1.0f;
-    inline static float maxTurn = pi / 180.0f;
+    inline static float turnFactor = pi / 180.0f;
     inline static float biasFactor = 2.0f;
     inline static float searchSize = 10;
     inline static float searchAngle = pi / 6;
     inline static float searchAngleOffset = 0;
-
-    inline static float searchModel = 1.0f;
 
     inline static float alternate = -1.0f;
     inline static float globalPeriodR = 9.0f;
@@ -91,6 +89,6 @@ private:
     Vector3f getAvgColor(Image& im, float dist, float angle, float offset);
 
     Vector3f alternateAvg(Image& im, float dist, float angle, float offset);
-    Vector3f getSpanAvg(Image& im, const Span& span, int y);
-    Vector3f getEdgeAvg(Image& im, const Edge& e1, const Edge& e2);
+    void getSpanSum(Vector3i& sum, int& count, Image& im, const Span& span, int y);
+    void getEdgeSum(Vector3i& sum, int& count, Image& im, const Edge& e1, const Edge& e2);
 };
