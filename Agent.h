@@ -5,20 +5,6 @@
 using namespace std;
 using namespace sf;
 
-struct Edge {
-
-    int X1, Y1, X2, Y2;
-
-    Edge(int x1, int y1, int x2, int y2);
-};
-
-struct Span {
-
-    int X1, X2;
-
-    Span(int x1, int x2);
-};
-
 class Agent {
 public:
 
@@ -44,6 +30,8 @@ public:
     inline static float distPeriodG = 10.0f;
     inline static float distPeriodB = 11.0f;
 
+    inline static float mandel = -1.0f;
+
     inline static float fract = 1.0f;
 
     inline static Vector3f palette = Vector3f(1.0f, 1.0f, 1.0f);
@@ -65,7 +53,27 @@ public:
 
     void updateDir(Image& im);
 
+    void mandelBrot(float time);
+
 private:
+
+    struct Edge {
+
+        int x1, x2, y1, y2;
+
+        int dx, dy;
+
+        Edge(int _x1, int _y1, int _x2, int _y2);
+    };
+
+    struct Span {
+
+        int x1, x2;
+
+        int dx;
+
+        Span(int _x1, int _x2);
+    };
 
     //agent properties
     Vector2f pos;
@@ -87,8 +95,6 @@ private:
     Vector3f norm(Vector3f v);
 
     Vector3f getAvgColor(Image& im, float dist, float angle, float offset);
-
-    Vector3f alternateAvg(Image& im, float dist, float angle, float offset);
     void getSpanSum(Vector3i& sum, int& count, Image& im, const Span& span, int y);
     void getEdgeSum(Vector3i& sum, int& count, Image& im, const Edge& e1, const Edge& e2);
 };

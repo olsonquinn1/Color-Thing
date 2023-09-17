@@ -271,7 +271,11 @@ int main()
         Setting("\tB Distance:", &Agent::distB, 1.0f, 2, [&]() {}),
         Setting("\tR Period:", &Agent::distPeriodR, 0.1f, 0, [&]() {}),
         Setting("\tG Period:", &Agent::distPeriodG, 0.1f, 0, [&]() {}),
-        Setting("\tB Period:", &Agent::distPeriodB, 0.1f, 0, [&]() {})
+        Setting("\tB Period:", &Agent::distPeriodB, 0.1f, 0, [&]() {}),
+        Setting("Mandel:", &Agent::mandel, 0.0f, 4, [&]() {
+            Agent::mandel *= -1.0f;
+            colorAlternateTimer.restart();
+        }),
     };
     
     int fps = 0;
@@ -383,6 +387,8 @@ int main()
             for_each(execution::par_unseq, agentList.begin(), agentList.end(), [&](auto&& a) {
                 a.updatePos();
                 a.alternateColor(colorAlternateTimer.getElapsedTime().asMilliseconds());
+                if (Agent::mandel > 0)
+                    a.mandelBrot(colorAlternateTimer.getElapsedTime().asMilliseconds());
                 a.updateDir(im);
             });
             tex.update(im);

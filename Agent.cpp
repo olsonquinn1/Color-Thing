@@ -8,35 +8,6 @@
 using namespace std;
 using namespace sf;
 
-Edge::Edge(int x1, int y1, int x2, int y2) {
-
-    if (y1 < y2) {
-        X1 = x1;
-        Y1 = y1;
-        X2 = x2;
-        Y2 = y2;
-    }
-    else {
-        X1 = x2;
-        Y1 = y2;
-        X2 = x1;
-        Y2 = y1;
-    }
-
-}
-
-Span::Span(int x1, int x2)
-{
-    if (x1 < x2) {
-        X1 = x1;
-        X2 = x2;
-    }
-    else {
-        X1 = x2;
-        X2 = x1;
-    }
-}
-
 //public members
 Agent::Agent() {
     //spawn agent with a random position, velocity, and base color
@@ -131,19 +102,13 @@ void Agent::updateDir(Image& im) {
     im.setPixel(pos.x, pos.y, color);
 
     //determine avg color in zones in front, left, and right of agent
-
-    Vector3f me = norm(Vector3f(color.r, color.g, color.b));
-
     //treat colors as a 3d vector for comparing
     //normalize average color to ignore color intensity when deciding which way to go
-    
-    Vector3f l;
-    Vector3f f;
-    Vector3f r;
 
-    l = norm(getAvgColor(im, searchSize, searchAngle, searchAngle + searchAngleOffset));
-    f = norm(getAvgColor(im, searchSize, searchAngle, 0));
-    r = norm(getAvgColor(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
+    Vector3f me = norm(Vector3f(color.r, color.g, color.b));
+    Vector3f l = norm(getAvgColor(im, searchSize, searchAngle, searchAngle + searchAngleOffset));
+    Vector3f f = norm(getAvgColor(im, searchSize, searchAngle, 0));
+    Vector3f r = norm(getAvgColor(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
 
     float lval = compare(me, l);
     float rval = compare(me, r);
@@ -153,6 +118,28 @@ void Agent::updateDir(Image& im) {
     float val = ((float)(rand() % 2000) / 1000.0f - 1.0f) + bias * biasFactor;
     alterDir( val * turnFactor );
     debug = false;
+}
+
+void Agent::mandelBrot(float time) {
+    float c_re = (pos.x - width / 2.0) * 4.0 / width / 2;
+    float c_im = (pos.y - height / 2.0) * 4.0 / height / 2;
+    c_re *= 1000.0f / pow(time, 1.5f);
+    c_im *= 1000.0f / pow(time, 1.5f);
+    c_re += -1.34855;
+    c_im += -0.0456763;
+    float x = 0, y = 0;
+    float max = 500;
+    for (float it = 0; it < max; it++) {
+        float x_new = x * x - y * y + c_re;
+        y = 2 * x * y + c_im;
+        x = x_new;
+        if (x * x + y * y > 4) {
+            //color.r *= it / max * 10;
+            color.g *= it / max * 100;
+            color.b *= it / max * 50;
+            break;
+        }
+    }
 }
 
 //private members
@@ -175,8 +162,8 @@ bool Agent::edgeFunc(Vector2i a, Vector2i b, Vector2i c) {
 
 float Agent::compare(Vector3f a, Vector3f b) {
     const float maxDist = sqrt(2); //maximum difference between two 3d normalized vectors 
-    float val = (
-        maxDist - sqrt(
+    float val = 1 - (
+        sqrt(
             pow(a.x - b.x, 2) +
             pow(a.y - b.y, 2) +
             pow(a.z - b.z, 2)
@@ -186,34 +173,66 @@ float Agent::compare(Vector3f a, Vector3f b) {
 }
 
 Vector3f Agent::norm(Vector3f v) {
-    const Vector3f zero(sqrt(2) / 2, sqrt(2) / 2, sqrt(2) / 2);
     float mag = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
     if (mag == 0) {
-        return zero;
+        return Vector3f(1.0f / sqrt(3), 1.0f / sqrt(3), 1.0f / sqrt(3));
     }
     return Vector3f(v.x / mag, v.y / mag, v.z / mag);
 }
 
 //rasterization algorithm, but instead of drawing the pixels within the triangle, we are reading them 
 //to determine the average color within the area of the triangle
+
+Agent::Edge::Edge(int _x1, int _y1, int _x2, int _y2) {
+
+    if (_y1 < _y2) {
+        x1 = _x1;
+        y1 = _y1;
+
+        x2 = _x2;
+        y2 = _y2;
+    } else {
+        x1 = _x2;
+        y1 = _y2;
+
+        x2 = _x1;
+        y2 = _y1;
+    }
+
+    dx = x2 - x1;
+    dy = y2 - y1;
+}
+
+Agent::Span::Span(int _x1, int _x2)
+{
+    if (_x1 < _x2) {
+        x1 = _x1;
+        x2 = _x2;
+    }
+    else {
+        x1 = _x2;
+        x2 = _x1;
+    }
+
+    dx = x2 - x1;
+}
+
 void Agent::getSpanSum(Vector3i& sum, int& count, Image& im, const Span& span, int y)
 {
     Vector2u size = im.getSize();
-    int xdiff = span.X2 - span.X1;
-    if (xdiff == 0)
+
+    if (span.dx == 0)
         return;
 
-    float factor = 0.0f;
-    float factorStep = 1.0f / (float)xdiff;
-
-    for (int x = span.X1; x < span.X2; x++) {
-        if (x < 0 || x >= size.x) 
+    for (int x = span.x1; x < span.x2; x++) {
+        if (x < 0)
             continue;
+        if (x >= size.x)
+            break;
 
         count++;
         Color c = im.getPixel(x, y);
         sum += Vector3i(c.r, c.g, c.b);
-        factor += factorStep;
     }
 }
 
@@ -222,35 +241,31 @@ void Agent::getEdgeSum(Vector3i& sum, int& count, Image& im, const Edge& e1, con
     Vector2u size = im.getSize();
 
     //ignore if either edge is horizontal
-    int e1ydiff = (e1.Y2 - e1.Y1);
-    if (e1ydiff == 0)
+    if (e1.dy == 0 || e2.dy == 0)
         return;
 
-    int e2ydiff = (e2.Y2 - e2.Y1);
-    if (e2ydiff == 0)
-        return;
+    //factors for walking the x values for each edge as we increase y
+    float e1Pos = static_cast<float>(e2.y1 - e1.y1) / e1.dy;
+    float e1Step = 1.0f / e1.dy;
 
-    int e1xdiff = (e1.X2 - e1.X1);
-    int e2xdiff = (e2.X2 - e2.X1);
+    float e2Pos = 0.0f;
+    float e2Step = 1.0f / e2.dy;
 
-    float factor1 = (float)(e2.Y1 - e1.Y1) / e1ydiff;
-    float factorStep1 = 1.0f / e1ydiff;
-    float factor2 = 0.0f;
-    float factorStep2 = 1.0f / e2ydiff;
-
-    for (int y = e2.Y1; y < e2.Y2; y++) {
-        if (y < 0 || y >= size.y) {
+    for (int y = e2.y1; y < e2.y2; y++) {
+        if (y < 0) 
             continue;
-        }
-        
+        if (y >= size.y)
+            break;
+
         Span span(
-            e1.X1 + (int)(e1xdiff * factor1),
-            e2.X1 + (int)(e2xdiff * factor2));
+            e1.x1 + static_cast<int>(e1.dx * e1Pos),
+            e2.x1 + static_cast<int>(e2.dx * e2Pos)
+        );
 
         getSpanSum(sum, count, im, span, y);
 
-        factor1 += factorStep1;
-        factor2 += factorStep2;
+        e1Pos += e1Step;
+        e2Pos += e2Step;
     }
 }
 
@@ -275,27 +290,26 @@ Vector3f Agent::getAvgColor(Image& im, float dist, float angle, float offset) {
     };
 
     //split triangle into two parts and search the pixels in the spans between each edge set
-    int maxLength = 0;
-    int longEdge = 0;
+    int max = 0;
+    int l = 0;
     for (int i = 0; i < 3; i++) {
-        int length = edges[i].Y2 - edges[i].Y1;
-        if (length > maxLength) {
-            maxLength = length;
-            longEdge = i;
+        if (edges[i].dy > max) {
+            max = edges[i].dy;
+            l = i;
         }
     }
-    int shortEdge1 = (longEdge + 1) % 3;
-    int shortEdge2 = (longEdge + 2) % 3;
+    int s1 = (l + 1) % 3;
+    int s2 = (l + 2) % 3;
 
     Vector3i sum(0, 0, 0);
 
     int count = 0;
 
-    getEdgeSum(sum, count, im, edges[longEdge], edges[shortEdge1]);
-    getEdgeSum(sum, count, im, edges[longEdge], edges[shortEdge2]);
+    getEdgeSum(sum, count, im, edges[l], edges[s1]);
+    getEdgeSum(sum, count, im, edges[l], edges[s2]);
 
     if (count == 0)
         count = 1;
 
-    return Vector3f((float)sum.x / count, (float)sum.y / count, (float)sum.z / count);
+    return Vector3f(static_cast<float>(sum.x) / count, static_cast<float>(sum.y) / count, static_cast<float>(sum.z) / count);
 }
