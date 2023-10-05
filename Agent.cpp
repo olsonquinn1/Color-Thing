@@ -110,13 +110,14 @@ void Agent::updateDir(Image& im) {
     Vector3f f = norm(getAvgColor(im, searchSize, searchAngle, 0));
     Vector3f r = norm(getAvgColor(im, searchSize, searchAngle, -1.0f * searchAngle - searchAngleOffset));
 
-    float lval = compare(me, l);
-    float rval = compare(me, r);
-    float mval = compare(me, f);
+    float lval = compare(me, l) - repulsion;
+    float rval = compare(me, r) - repulsion;
+    float mval = compare(me, f) - repulsion;
+
     float bias = (lval - rval) * (1 - mval) * 255;
     //biasFactor affects how heavily the bias affects the decision
-    float val = ((float)(rand() % 2000) / 1000.0f - 1.0f) + bias * biasFactor;
-    alterDir( val * turnFactor );
+    float val = ((float)(rand() % 2000) / 1000.0f - 1.0f) * randFactor + bias * biasFactor;
+    alterDir( val * pi / 180.0f * turnFactor );
     debug = false;
 }
 
@@ -173,15 +174,26 @@ float Agent::compare(Vector3f a, Vector3f b) {
 }
 
 Vector3f Agent::norm(Vector3f v) {
+    const Vector3f zero(1.0f / sqrt(3), 1.0f / sqrt(3), 1.0f / sqrt(3));
+
     float mag = sqrt(pow(v.x, 2) + pow(v.y, 2) + pow(v.z, 2));
+    
     if (mag == 0) {
-        return Vector3f(1.0f / sqrt(3), 1.0f / sqrt(3), 1.0f / sqrt(3));
+        return zero;
     }
     return Vector3f(v.x / mag, v.y / mag, v.z / mag);
 }
 
 //rasterization algorithm, but instead of drawing the pixels within the triangle, we are reading them 
 //to determine the average color within the area of the triangle
+
+int wrap(int i, int size) {
+    if (i < 0) 
+        return size + i % size;
+    if (i >= size)
+        return i % size;
+    return i;
+}
 
 Agent::Edge::Edge(int _x1, int _y1, int _x2, int _y2) {
 
@@ -225,13 +237,15 @@ void Agent::getSpanSum(Vector3i& sum, int& count, Image& im, const Span& span, i
         return;
 
     for (int x = span.x1; x < span.x2; x++) {
+        /*
         if (x < 0)
             continue;
         if (x >= size.x)
             break;
-
+        */
         count++;
-        Color c = im.getPixel(x, y);
+
+        Color c = im.getPixel(wrap(x, size.x), wrap(y, size.y));
         sum += Vector3i(c.r, c.g, c.b);
     }
 }
@@ -252,11 +266,13 @@ void Agent::getEdgeSum(Vector3i& sum, int& count, Image& im, const Edge& e1, con
     float e2Step = 1.0f / e2.dy;
 
     for (int y = e2.y1; y < e2.y2; y++) {
+
+        /*
         if (y < 0) 
             continue;
         if (y >= size.y)
             break;
-
+        */
         Span span(
             e1.x1 + static_cast<int>(e1.dx * e1Pos),
             e2.x1 + static_cast<int>(e2.dx * e2Pos)

@@ -11,8 +11,10 @@ public:
     inline static const float pi = 3.141592653589793f;
 
     inline static float speed = 1.0f;
-    inline static float turnFactor = pi / 180.0f;
+    inline static float turnFactor = 1.0f;
+    inline static float randFactor = 1.0f;
     inline static float biasFactor = 2.0f;
+    inline static float repulsion = 0.0f;
     inline static float searchSize = 10;
     inline static float searchAngle = pi / 6;
     inline static float searchAngleOffset = 0;

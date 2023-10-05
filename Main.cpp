@@ -210,8 +210,10 @@ int main()
             }
         }),
         Setting("Speed:", &Agent::speed, 0.05f, 0, [&]() {}),
-        Setting("Turn Factor:", &Agent::turnFactor, _Pi / 720.0f, 3, [&]() {}),
+        Setting("Turn Factor:", &Agent::turnFactor, 0.01f, 0, [&]() {}),
+        Setting("Randomness:", &Agent::randFactor, 0.05f, 0, [&]() {}),
         Setting("Bias:", &Agent::biasFactor, 0.05f, 0, [&]() {}),
+        Setting("Repulsion:", &Agent::repulsion, 0.01f, 0, [&]() {}),
         Setting("Search Size:", &Agent::searchSize, 1.0f, 0, [&]() {}),
         Setting("Search Angle:", &Agent::searchAngle, _Pi / 360.0f, 3, [&]() {
             updatePreview(searchPreview, previewPos, 50);
@@ -228,7 +230,7 @@ int main()
                 *groups[currentGroup].settings[currentSetting - 1].val
             );
         }),
-        Setting("Disperse:", &disperseFactor, 0.005f, 0, "disperseFactor", [&]() {
+        Setting("Disperse:", &disperseFactor, 0.01f, 0, "disperseFactor", [&]() {
             shader.setUniform(
                 groups[currentGroup].settings[currentSetting - 1].shaderVar,
                 *groups[currentGroup].settings[currentSetting - 1].val
